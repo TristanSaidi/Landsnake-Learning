@@ -1,0 +1,9 @@
+GAMMA = 0.99
+MAX_EP_LEN = 750
+LEARNING_RATE = 0.0003
+INCL_BODY_COM = True
+INCL_GLOBAL_ANGLE = True
+INCL_RELATIVE_VELOCITIES = True
+FRAME_SKIP = 5
+BATCH_SIZE = 1024
+NOTES = Both networks have [256,256,256] neurons. Activation function is tanh. SAC algorithm used

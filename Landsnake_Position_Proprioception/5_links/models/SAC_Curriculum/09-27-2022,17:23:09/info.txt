@@ -1,0 +1,14 @@
+GAMMA = 0.99
+MAX_EP_LEN = 750
+LEARNING_RATE = 0.0003
+INCL_BODY_COM = True
+INCL_GLOBAL_ANGLE = True
+INCL_RELATIVE_VELOCITIES = True
+INCL_TORQUES = True
+FRAME_SKIP = 5
+RESET_NOISE_SCALE = 0
+BATCH_SIZE = 1024
+NOTES = Both networks have [256,256,256] neurons. Activation function is tanh. SAC algorithm used
+TARGET_RANGE_X = [-2  2]
+TARGET_RANGE_Y = [0 4]
+XML = landsnake_waypoint_obstacles_9_27_22.xml
