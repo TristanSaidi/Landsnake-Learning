@@ -1,5 +1,4 @@
 import numpy as np
-import gym
 from gym.envs.mujoco import mujoco_env
 from gym import utils
 
@@ -58,6 +57,10 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         #load initial env
         mujoco_env.MujocoEnv.__init__(self, xml_file_list[random_idx], frame_skip=frame_skip,mujoco_bindings="mujoco_py")
         self.target_sid = self.model.site_name2id("target")
+        
+        #number of obstacles
+        self.n_obs = 8
+        
 
     def control_cost(self, action):
         control_cost = self._ctrl_cost_weight * np.sum(np.square(action))
@@ -175,9 +178,18 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         qvel = np.zeros(self.model.nv)
 
         self.set_state(qpos, qvel)
-        	
+        
+        #set target location (in case it was regenerated)	
         self.model.site_pos[self.target_sid] = np.append(self.TARGET,0)
         observation = self._get_obs()
+        
+        #randomly set obstacle locations
+        for i in range(self.n_obs):
+            obs_id = self.target_sid = self.model.geom_name2id('Obs'+str(i+1))
+            x_pos = np.random.uniform(low = 1, high = 4.5)
+            y_pos = np.random.uniform(low = -0.2, high = 0.2)
+            self.model.geom_pos[obs_id] = np.array([x_pos, y_pos, 0.1])
+            
         return observation
 
     def viewer_setup(self):
@@ -186,48 +198,4 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 getattr(self.viewer.cam, key)[:] = value
             else:
                 setattr(self.viewer.cam, key, value)
-                
-GAMMA = 0.99
-GAE_LAMBDA = 0.95
-MAX_EP_LEN = 2000
-LEARNING_RATE = 3e-4
-N_EPOCHS = 3
-BATCH_SIZE = 1024
-TARGET = np.array([3,0])
-INCL_HEAD_POS = True
-INCL_BODY_CENTER = False
-INCL_OPT_ENCODER_VELOCITIES = True
-INCL_ANG_VELS = False
-INCL_HEAD_ANGLE = True
-INCL_TORQUES = False
-FRAME_SKIP = 5
-RESET_NOISE_SCALE = 0
-NOTES = "Both networks have [256,256,256] neurons. Activation function is tanh. SAC algorithm used"
-XML_list = ['landsnake_waypoint_obstacles_12-06_1.xml','landsnake_waypoint_obstacles_12-06_2.xml','landsnake_waypoint_obstacles_12-06_3.xml']
-
-
-policy_kwargs = dict(net_arch=dict(pi=[256,256,256], qf=[256,256,256]))
-
-env = gym.make('landsnake_env_variable-v0',
-                xml_file_list = XML_list,
-                frame_skip=FRAME_SKIP,
-                NLINKS = 5,
-                TARGET = TARGET,
-                INCL_HEAD_ANGLE = INCL_HEAD_ANGLE,
-                INCL_HEAD_POS = INCL_HEAD_POS,
-                INCL_BODY_CENTER = INCL_BODY_CENTER,
-                INCL_ANG_VELS = INCL_ANG_VELS,
-                INCL_TORQUES = INCL_TORQUES,
-                INCL_OPT_ENCODER_VELOCITIES = INCL_OPT_ENCODER_VELOCITIES,
-                reset_noise_scale = RESET_NOISE_SCALE)
-
-for ep in range(1):
-    obs = env.reset()
-    done = False
-    while not done:
-
-        env.render()
-        obs, reward, done, info = env.step(np.random.uniform(size=4))
-
-env.close()
 

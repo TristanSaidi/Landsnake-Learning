@@ -7,20 +7,24 @@ from datetime import datetime
 import torch as th
 import random
 import numpy as np
+from landsnake_env_variable import LandSnakeEnv_VariableEnv
 
+#Reinforcement Learning params
 GAMMA = 0.99
 GAE_LAMBDA = 0.95
 MAX_EP_LEN = 2000
 LEARNING_RATE = 3e-4
 N_EPOCHS = 3
 BATCH_SIZE = 1024
+
+#Environment params
 TARGET = np.array([3,0])
 INCL_HEAD_POS = True
 INCL_BODY_CENTER = False
 INCL_OPT_ENCODER_VELOCITIES = True
 INCL_ANG_VELS = False
 INCL_HEAD_ANGLE = True
-INCL_TORQUES = False
+INCL_TORQUES = True
 FRAME_SKIP = 5
 RESET_NOISE_SCALE = 0
 NOTES = "Both networks have [256,256,256] neurons. Activation function is tanh. SAC algorithm used"
@@ -29,7 +33,7 @@ XML_list = ['landsnake_waypoint_obstacles_12-06_1.xml','landsnake_waypoint_obsta
 
 policy_kwargs = dict(net_arch=dict(pi=[256,256,256], qf=[256,256,256]))
 
-env = gym.make('landsnake_env_variable-v0',
+env = LandSnakeEnv_VariableEnv(
                 xml_file_list = XML_list,
                 frame_skip=FRAME_SKIP,
                 NLINKS = 5,
@@ -86,7 +90,7 @@ model = SAC("MlpPolicy",
             seed=SEED)
 
 TIMESTEPS = 50000
-for i in range(200):
+for i in range(100):
 
     model.learn(total_timesteps = TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"PPO_{date_time}")
     model.save(f"{models_dir}/{TIMESTEPS*i}.zip")
