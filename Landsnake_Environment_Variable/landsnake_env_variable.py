@@ -36,6 +36,9 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.INCL_BODY_CENTER = INCL_BODY_CENTER
         self.INCL_ANG_VELS = INCL_ANG_VELS
         
+        self.steps = 0
+        self.max_ep_steps = 2000
+        
         self.TARGET = TARGET
         
         #allowing reset() function to access simulation parameters 
@@ -79,6 +82,9 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return reward
         
     def step(self, action):
+        #increment step count
+        self.steps += 1
+        
         xy_position_before = self.sim.data.qpos[0:2].copy()
        
         #select controller based on env parameters
@@ -98,7 +104,7 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         reward = forward_reward - ctrl_cost
 
         done = False
-        if(forward_reward > -0.005): # reward threshold for termination
+        if(forward_reward > -0.005 or self.steps > self.max_ep_steps): #threshold for termination
             done = True
         info = {
             "reward_fwd": forward_reward,
@@ -164,6 +170,9 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.TARGET = new_target
 
     def reset_model(self):
+        #reset episode step count
+        self.steps = 0
+        
         print("Resetting Episode ...")
         noise_low = -self._reset_noise_scale
         noise_high = self._reset_noise_scale
@@ -185,7 +194,7 @@ class LandSnakeEnv_VariableEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         
         #randomly set obstacle locations
         for i in range(self.n_obs):
-            obs_id = self.target_sid = self.model.geom_name2id('Obs'+str(i+1))
+            obs_id = self.model.geom_name2id('Obs'+str(i+1))
             x_pos = np.random.uniform(low = 1, high = 4.5)
             y_pos = np.random.uniform(low = -0.2, high = 0.2)
             self.model.geom_pos[obs_id] = np.array([x_pos, y_pos, 0.1])

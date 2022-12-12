@@ -24,11 +24,11 @@ INCL_BODY_CENTER = False
 INCL_OPT_ENCODER_VELOCITIES = True
 INCL_ANG_VELS = False
 INCL_HEAD_ANGLE = True
-INCL_TORQUES = True
+INCL_TORQUES = False
 FRAME_SKIP = 5
 RESET_NOISE_SCALE = 0
 NOTES = "Both networks have [256,256,256] neurons. Activation function is tanh. SAC algorithm used"
-XML_list = ['landsnake_waypoint_obstacles_12-06_1.xml','landsnake_waypoint_obstacles_12-06_2.xml','landsnake_waypoint_obstacles_12-06_3.xml']
+XML_list = ['landsnake_waypoint_obstacles_12-11_1.xml']
 
 
 policy_kwargs = dict(net_arch=dict(pi=[256,256,256], qf=[256,256,256]))

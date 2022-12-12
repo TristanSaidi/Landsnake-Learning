@@ -9,6 +9,6 @@ INCL_ANG_VELS = False
 INCL_TORQUES = True
 FRAME_SKIP = 5
 RESET_NOISE_SCALE = 0
-XML_list = ['landsnake_waypoint_obstacles_12-06_1.xml', 'landsnake_waypoint_obstacles_12-06_2.xml', 'landsnake_waypoint_obstacles_12-06_3.xml']
+XML_list = ['landsnake_waypoint_obstacles_12-11_1.xml']
 BATCH_SIZE = 1024
 NOTES = Both networks have [256,256,256] neurons. Activation function is tanh. SAC algorithm used
